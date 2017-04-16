@@ -4,6 +4,7 @@ var isPaired = false;
 socket.on('connect', function(event){
 
 	appendNotification('Connected with server');
+	pair();
 });
 
 socket.on('message', function(message){
@@ -26,6 +27,7 @@ socket.on('unpaired', function(message){
 	isPaired = false;
 	document.getElementById('chat-toggle').innerHTML = 'New';
 	appendNotification('Stranger has disconnected.');
+	appendNotification('<button onclick="pair()" class="chat-button-reconnect">Click here to start new conversation</button>');
 });
 
 socket.on('clear', function(message){
@@ -109,6 +111,7 @@ function unpair(){
 	isPaired = false;
 	document.getElementById('chat-toggle').innerHTML = 'New';
 	appendNotification('You have disconnected.');
+	appendNotification('<button onclick="pair()" class="chat-button-reconnect">Click here to start new conversation</button>');
 }
 
 function pair(){

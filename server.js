@@ -24,7 +24,7 @@ io.on('connection', function(client){
 
 	client.on('message', function(message){
 		
-		sendToPair(client.id, 'message', message);
+		sendMessageToPair(client.id, message);
 	});
 
 	client.on('unpair', function(message){
@@ -56,8 +56,8 @@ function pairClients(client, client2){
 	pairs.push([client, client2]);
 	queue.splice(0, 2);
 
-	sendToPair(client, 'clear');
-	sendToPair(client, 'paired');
+	sendNotificationToPair(client, 'clear');
+	sendNotificationToPair(client, 'paired');
 }
 
 function unpairClient(client){
@@ -81,7 +81,7 @@ function unpairClient(client){
 	removePair(pair);
 }
 
-function sendToPair(client, type, message){
+function sendMessageToPair(client, message){
 
 	var pair = getClientPair(client);
 
@@ -90,23 +90,31 @@ function sendToPair(client, type, message){
 		return;
 	}
 
-	if(type != 'message'){
-
-		io.to(pair[0]).emit(type, message);
-		io.to(pair[1]).emit(type, message);
-		return;
-	}
+	message = message.replace(/<[^>]*>/gi, '');
 
 	if(pair[0] == client){
 
-		io.to(pair[0]).emit(type, 'You: ' + message);
-		io.to(pair[1]).emit(type, 'Stranger: ' + message);
+		io.to(pair[0]).emit('message', 'You: ' + message);
+		io.to(pair[1]).emit('message', 'Stranger: ' + message);
 	}
 	else{
 
-		io.to(pair[0]).emit(type, 'Stranger: ' + message);
-		io.to(pair[1]).emit(type, 'You: ' + message);
+		io.to(pair[0]).emit('message', 'Stranger: ' + message);
+		io.to(pair[1]).emit('message', 'You: ' + message);
 	}		
+}
+
+function sendNotificationToPair(client, type){
+
+	var pair = getClientPair(client);
+
+	if(!pair){
+
+		return;
+	}
+
+	io.to(pair[0]).emit(type);
+	io.to(pair[1]).emit(type);
 }
 
 function getClientPair(client){

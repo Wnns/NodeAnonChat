@@ -27,6 +27,19 @@ body{
 	margin-left: 5px;
 }
 
+.chat-button-reconnect{
+
+	height: 30px;
+	border-radius: 0;
+	color: #fff;
+	background-color: #6496c8;
+	text-shadow: -1px 1px #417cb8;
+	border: none;
+	padding: 5px 20px;
+	border-radius: 3px;
+	margin: 10px 0;
+}
+
 #chat-controls{
 
 	display: inline-block;
