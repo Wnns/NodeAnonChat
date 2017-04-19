@@ -1,14 +1,21 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var port = 9000;
 
 var queue = [];
 var pairs = [];
 
+app.get('/chat', function(req, res){
+
+	res.sendFile(__dirname + '/web/chat.html');
+});
+
 app.get('*', function(req, res){
 
 	res.sendFile(__dirname + '/web/' + req.url);
-})
+});
 
 io.on('connection', function(client){
 
@@ -34,13 +41,17 @@ io.on('connection', function(client){
 
 	client.on('disconnect', function(){
 
+		if(isClientInQueue(client.id)){
+
+			removeFromQueue(client.id);
+		}
 		unpairClient(client.id);
 	});
 });
 
-http.listen(9000, function(){
+http.listen(port, function(){
 
-	console.log('Http server started');
+	console.log('Server started!');
 });
 
 function findPair(){
@@ -144,4 +155,10 @@ function removePair(pair){
 
 	var pairIndex = pairs.indexOf(pair);
 	pairs.splice(pairIndex, 1);
+}
+
+function removeFromQueue(client){
+
+	var clientIndex = queue.indexOf(client);
+	queue.splice(clientIndex, 1);
 }
